@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todo_work_sessions/features/timer/application/dnd_provider.dart';
 import 'package:todo_work_sessions/features/timer/application/timer_notifier.dart';
 import '../domain/timer_state.dart';
 import '../../application/application_providers.dart';
@@ -23,6 +24,7 @@ class SessionScreen extends ConsumerWidget {
     final timerState = ref.watch(timerNotifierProvider);
     final timerNotifier = ref.read(timerNotifierProvider.notifier);
     final genericSettings = ref.watch(genericTimerSettingsProvider);
+    final isDndEnabled = ref.watch(dndProvider);
 
     final isRunning = timerState.status == TimerStatus.running;
     final double progress = timerState.mode == TimerMode.pomodoro && timerState.initialDuration.inSeconds > 0
@@ -30,7 +32,16 @@ class SessionScreen extends ConsumerWidget {
         : 0.0;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Session de Focus')),
+      appBar: AppBar(
+        title: const Text('Session de Focus'),
+        actions: [
+          IconButton(
+            icon: Icon(isDndEnabled ? Icons.do_not_disturb_on : Icons.do_not_disturb_off),
+            color: isDndEnabled ? Colors.blue : null,
+            onPressed: () => ref.read(dndProvider.notifier).toggleDnd(),
+          ),
+        ],
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(

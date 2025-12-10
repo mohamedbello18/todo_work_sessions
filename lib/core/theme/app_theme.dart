@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   static const Color primaryBlue = Color(0xFF1A2E40); // Bleu nuit
-  static const Color accentBlue = Color(0xFF3B82F6); // Bleu vif
+  static const Color accentBlue = Color(0xFF1F4D6E);
   static const Color backgroundLight = Color(0xFFF5F5F5);
   static const Color backgroundDark = Color(0xFF121212);
   static const Color cardDark = Color(0xFF1E1E1E);
