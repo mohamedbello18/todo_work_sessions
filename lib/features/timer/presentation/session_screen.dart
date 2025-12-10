@@ -48,6 +48,9 @@ class SessionScreen extends ConsumerWidget {
                     onSelectionChanged: (newSelection) {
                       ref.read(genericTimerSettingsProvider.notifier).state = GenericTimerSettings(mode: newSelection.first, pomodoroDuration: genericSettings.pomodoroDuration);
                     },
+                    style: SegmentedButton.styleFrom(
+                      selectedForegroundColor: Colors.white,
+                    ),
                   ),
                 ),
               const SizedBox(height: 20),
