@@ -9,7 +9,8 @@ import 'core/theme/app_theme.dart';
 import 'data/adapters/duration_adapter.dart';
 import 'data/models/task.dart'; 
 import 'features/main_wrapper.dart';
-import 'features/settings/application/theme_provider.dart'; // <== NOUVELLE IMPORTATION
+import 'features/settings/application/theme_provider.dart';
+import 'pages/splash_screen.dart';
 
 Future<void> initDependencies() async {
   await Hive.initFlutter();
@@ -19,11 +20,11 @@ Future<void> initDependencies() async {
   Hive.registerAdapter(TaskPriorityAdapter());
   Hive.registerAdapter(TaskStatusAdapter());
   Hive.registerAdapter(DurationAdapter());
-  Hive.registerAdapter(ThemeModeAdapter()); // <== ENREGISTREMENT
+  Hive.registerAdapter(ThemeModeAdapter()); 
 
   // Ouverture des box
   await Hive.openBox<Task>('tasksBox');
-  await Hive.openBox('settings'); // <== OUVERTURE
+  await Hive.openBox('settings');
 
   await NotificationService().init();
 }
@@ -44,15 +45,17 @@ class TodoWorkSessionsApp extends ConsumerWidget {
     // On écoute le provider du thème
     final themeMode = ref.watch(themeNotifierProvider);
 
-    FlutterNativeSplash.remove();
-
     return MaterialApp(
       title: 'Todo Work Sessions',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme, // Votre thème clair existant
-      darkTheme: AppTheme.darkTheme,  // On va créer ce thème
-      themeMode: themeMode, // On applique le mode choisi
-      home: const MainWrapper(), 
+      theme: AppTheme.lightTheme, 
+      darkTheme: AppTheme.darkTheme,  
+      themeMode: themeMode, 
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SplashScreen(),
+        '/home': (context) => const MainWrapper(),
+      },
     );
   }
 }
