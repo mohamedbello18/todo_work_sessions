@@ -40,8 +40,9 @@ class HiveTaskRepositoryImpl implements TaskRepository {
   Future<void> updateTask(Task task, {TaskStatus? originalStatus}) async {
     if (originalStatus != null && task.status != originalStatus) {
       if (task.status == TaskStatus.inProgress && task.startedAt == null) task.startedAt = DateTime.now();
-      if (task.status == TaskStatus.done) task.completedAt = DateTime.now();
-      else if (originalStatus == TaskStatus.done) task.completedAt = null;
+      if (task.status == TaskStatus.done) {
+        task.completedAt = DateTime.now();
+      } else if (originalStatus == TaskStatus.done) task.completedAt = null;
     }
 
     await task.save();

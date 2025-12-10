@@ -1,6 +1,5 @@
 // lib/features/timer/presentation/session_screen.dart
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo_work_sessions/features/timer/application/timer_notifier.dart';
