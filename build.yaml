@@ -1,0 +1,18 @@
+# build.yaml (Version Corrigée et Spécifique)
+# Ce fichier configure explicitement le comportement de build_runner.
+
+targets:
+  $default:
+    builders:
+      # Configuration pour le générateur de code Hive.
+      hive_generator:hive_generator:
+        # On lui dit de ne s'appliquer qu'aux fichiers dans le dossier des modèles.
+        # Ceci évite qu'il n'analyse d'autres fichiers dans `lib`.
+        generate_for:
+          - lib/data/models/**.dart
+
+      # Configuration pour le générateur de mocks (Mockito).
+      mockito:mockBuilder:
+        # On lui dit de ne s'appliquer qu'à notre fichier de configuration de mocks.
+        generate_for:
+          - test/mocks.dart
