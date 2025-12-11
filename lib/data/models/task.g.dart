@@ -33,13 +33,16 @@ class TaskAdapter extends TypeAdapter<Task> {
       completedAt: fields[14] as DateTime?,
       scheduledAt: fields[15] as DateTime?,
       parentTaskKey: fields[16] as dynamic,
+      attachments: (fields[17] as HiveList?)?.castHiveList(),
+      comments: (fields[18] as HiveList?)?.castHiveList(),
+      history: (fields[19] as HiveList?)?.castHiveList(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Task obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(19)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -71,7 +74,13 @@ class TaskAdapter extends TypeAdapter<Task> {
       ..writeByte(15)
       ..write(obj.scheduledAt)
       ..writeByte(16)
-      ..write(obj.parentTaskKey);
+      ..write(obj.parentTaskKey)
+      ..writeByte(17)
+      ..write(obj.attachments)
+      ..writeByte(18)
+      ..write(obj.comments)
+      ..writeByte(19)
+      ..write(obj.history);
   }
 
   @override

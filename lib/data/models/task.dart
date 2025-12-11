@@ -1,4 +1,7 @@
 import 'package:hive/hive.dart';
+import 'attachment.dart';
+import 'comment.dart';
+import 'history_event.dart';
 
 part 'task.g.dart';
 
@@ -47,6 +50,15 @@ class Task extends HiveObject {
   @HiveField(16) 
   dynamic parentTaskKey;
 
+  @HiveField(17)
+  HiveList<Attachment>? attachments;
+
+  @HiveField(18)
+  HiveList<Comment>? comments;
+
+  @HiveField(19)
+  HiveList<HistoryEvent>? history;
+
   Task({
     this.id,
     required this.title,
@@ -64,6 +76,9 @@ class Task extends HiveObject {
     this.completedAt,
     this.scheduledAt,
     this.parentTaskKey,
+    this.attachments,
+    this.comments,
+    this.history,
   });
 
   Map<String, dynamic> toJson() {

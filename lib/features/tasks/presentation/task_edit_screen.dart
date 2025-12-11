@@ -117,7 +117,7 @@ class _TaskEditScreenState extends ConsumerState<TaskEditScreen> {
   @override
   Widget build(BuildContext context) {
     final tasks = ref.watch(tasksStreamProvider).value ?? [];
-    final parentTaskOptions = tasks.where((task) => task.key != widget.task?.key).toList();
+    final parentTaskOptions = tasks.where((task) => task.key != widget.task?.key && task.parentTaskKey == null).toList();
 
     return Scaffold(
       appBar: AppBar(title: Text(_isEditing ? 'Modifier la Tâche' : 'Nouvelle Tâche'), actions: [IconButton(icon: const Icon(Icons.save_alt_outlined), onPressed: _saveForm, tooltip: 'Sauvegarder')]),

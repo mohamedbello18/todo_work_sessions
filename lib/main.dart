@@ -8,6 +8,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'core/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
 import 'data/adapters/duration_adapter.dart';
+import 'data/models/attachment.dart';
+import 'data/models/comment.dart';
+import 'data/models/history_event.dart';
 import 'data/models/session.dart';
 import 'data/models/task.dart'; 
 import 'features/main_wrapper.dart';
@@ -25,10 +28,17 @@ Future<void> initDependencies() async {
   Hive.registerAdapter(ThemeModeAdapter()); 
   Hive.registerAdapter(SessionAdapter());
   Hive.registerAdapter(RecordedSessionTypeAdapter());
+  Hive.registerAdapter(AttachmentAdapter());
+  Hive.registerAdapter(AttachmentTypeAdapter());
+  Hive.registerAdapter(CommentAdapter());
+  Hive.registerAdapter(HistoryEventAdapter());
 
   // Overture des box
   await Hive.openBox<Task>('tasksBox');
   await Hive.openBox<Session>('sessionsBox');
+  await Hive.openBox<Attachment>('attachmentsBox');
+  await Hive.openBox<Comment>('commentsBox');
+  await Hive.openBox<HistoryEvent>('historyEventsBox');
   await Hive.openBox('settings');
 
   await NotificationService().init();
