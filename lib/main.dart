@@ -22,7 +22,7 @@ Future<void> initDependencies() async {
   Hive.registerAdapter(DurationAdapter());
   Hive.registerAdapter(ThemeModeAdapter()); 
 
-  // Ouverture des box
+  // Overture des box
   await Hive.openBox<Task>('tasksBox');
   await Hive.openBox('settings');
 
@@ -36,7 +36,7 @@ void main() async {
   runApp(const ProviderScope(child: TodoWorkSessionsApp()));
 }
 
-// On transforme en ConsumerWidget pour lire le thème
+// On transform en ConsumerWidget pour lire le thème
 class TodoWorkSessionsApp extends ConsumerWidget {
   const TodoWorkSessionsApp({super.key});
 

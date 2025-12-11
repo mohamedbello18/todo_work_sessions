@@ -37,6 +37,7 @@ class MainWrapper extends ConsumerWidget {
       ),
       floatingActionButton: selectedIndex == 0
           ? FloatingActionButton(
+              heroTag: 'fab_main', // Unique tag
               onPressed: navigateToEditScreen,
               child: const Icon(Icons.add),
             )

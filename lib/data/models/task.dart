@@ -1,5 +1,3 @@
-// lib/data/models/task.dart
-
 import 'package:hive/hive.dart';
 
 part 'task.g.dart';
@@ -19,7 +17,6 @@ class Task extends HiveObject {
   String title;
   @HiveField(2)
   final String? userId;
-  // Le champ 3 (isCompleted) est obsolète et peut être réutilisé si nécessaire dans le futur.
   @HiveField(4)
   final DateTime createdAt;
   @HiveField(5)
@@ -47,6 +44,9 @@ class Task extends HiveObject {
   @HiveField(15)
   DateTime? scheduledAt;
 
+  @HiveField(16) 
+  dynamic parentTaskKey;
+
   Task({
     this.id,
     required this.title,
@@ -63,6 +63,7 @@ class Task extends HiveObject {
     this.startedAt,
     this.completedAt,
     this.scheduledAt,
+    this.parentTaskKey,
   });
 
   Map<String, dynamic> toJson() {
@@ -82,6 +83,7 @@ class Task extends HiveObject {
       'started_at': startedAt?.toIso8601String(),
       'completed_at': completedAt?.toIso8601String(),
       'scheduled_at': scheduledAt?.toIso8601String(),
+      'parent_task_key': parentTaskKey,
     };
   }
 }

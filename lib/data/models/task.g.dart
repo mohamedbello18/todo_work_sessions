@@ -32,13 +32,14 @@ class TaskAdapter extends TypeAdapter<Task> {
       startedAt: fields[13] as DateTime?,
       completedAt: fields[14] as DateTime?,
       scheduledAt: fields[15] as DateTime?,
+      parentTaskKey: fields[16] as dynamic,
     );
   }
 
   @override
   void write(BinaryWriter writer, Task obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -68,7 +69,9 @@ class TaskAdapter extends TypeAdapter<Task> {
       ..writeByte(14)
       ..write(obj.completedAt)
       ..writeByte(15)
-      ..write(obj.scheduledAt);
+      ..write(obj.scheduledAt)
+      ..writeByte(16)
+      ..write(obj.parentTaskKey);
   }
 
   @override
