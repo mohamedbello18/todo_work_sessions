@@ -37,6 +37,7 @@ class MainWrapper extends ConsumerWidget {
       ),
       floatingActionButton: selectedIndex == 0
           ? FloatingActionButton(
+              heroTag: 'fab_main', // Unique tag
               onPressed: navigateToEditScreen,
               child: const Icon(Icons.add),
             )
@@ -44,7 +45,7 @@ class MainWrapper extends ConsumerWidget {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.check_box_outlined), label: 'Tâches'),
-          BottomNavigationBarItem(icon: Icon(Icons.timer_outlined), label: 'Minuteur'),
+          BottomNavigationBarItem(icon: Icon(Icons.timelapse_outlined), label: 'Session'),
           BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), label: 'Paramètres'),
         ],
         currentIndex: selectedIndex,

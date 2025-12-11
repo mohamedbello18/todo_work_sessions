@@ -1,9 +1,11 @@
 // lib/features/timer/presentation/session_screen.dart
 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo_work_sessions/features/timer/application/dnd_provider.dart';
 import 'package:todo_work_sessions/features/timer/application/timer_notifier.dart';
+import 'package:todo_work_sessions/features/timer/presentation/session_history_screen.dart';
 import '../domain/timer_state.dart';
 import '../../application/application_providers.dart';
 
@@ -36,10 +38,15 @@ class SessionScreen extends ConsumerWidget {
         title: const Text('Session de Focus'),
         actions: [
           IconButton(
-            icon: Icon(isDndEnabled ? Icons.do_not_disturb_on : Icons.do_not_disturb_off),
-            color: isDndEnabled ? Colors.blue : null,
-            onPressed: () => ref.read(dndProvider.notifier).toggleDnd(),
+            icon: const Icon(Icons.history),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SessionHistoryScreen())),
           ),
+          if (Platform.isAndroid)
+            IconButton(
+              icon: Icon(isDndEnabled ? Icons.do_not_disturb_on : Icons.do_not_disturb_off),
+              color: isDndEnabled ? Colors.blue : null,
+              onPressed: () => ref.read(dndProvider.notifier).toggleDnd(),
+            ),
         ],
       ),
       body: Center(

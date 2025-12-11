@@ -1,5 +1,3 @@
-// lib/features/tasks/presentation/task_edit_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/utils/string_extension.dart';
@@ -24,8 +22,9 @@ class _TaskEditScreenState extends ConsumerState<TaskEditScreen> {
   DateTime? _dueDate, _scheduledAt;
   Duration? _estimatedDuration, _reminderOffset;
   late List<String> _tags;
+  dynamic _parentTaskKey;
 
-  bool get _isEditing => widget.task != null;
+  bool get _isEditing => widget.task != null && widget.task!.isInBox;
   
   final Map<String, Duration> _reminderOptions = {
     'Aucun': Duration.zero,
@@ -53,6 +52,7 @@ class _TaskEditScreenState extends ConsumerState<TaskEditScreen> {
     _estimatedDuration = widget.task?.estimatedDuration;
     _reminderOffset = widget.task?.reminderOffset;
     _tags = widget.task?.tags ?? [];
+    _parentTaskKey = widget.task?.parentTaskKey;
   }
 
   @override
@@ -87,10 +87,11 @@ class _TaskEditScreenState extends ConsumerState<TaskEditScreen> {
         widget.task!.reminderOffset = _reminderOffset;
         widget.task!.tags = _tags;
         widget.task!.estimatedDuration = _estimatedDuration;
+        widget.task!.parentTaskKey = _parentTaskKey;
         repository.updateTask(widget.task!, originalStatus: _originalStatus);
         feedbackMessage = 'Tâche modifiée avec succès !';
       } else {
-        final newTask = Task(title: _titleController.text, createdAt: DateTime.now(), description: _descriptionController.text, notes: _notesController.text, priority: _priority, status: _status, dueDate: _dueDate, scheduledAt: _scheduledAt, reminderOffset: _reminderOffset, tags: _tags, estimatedDuration: _estimatedDuration);
+        final newTask = Task(title: _titleController.text, createdAt: DateTime.now(), description: _descriptionController.text, notes: _notesController.text, priority: _priority, status: _status, dueDate: _dueDate, scheduledAt: _scheduledAt, reminderOffset: _reminderOffset, tags: _tags, estimatedDuration: _estimatedDuration, parentTaskKey: _parentTaskKey);
         repository.addTask(newTask);
         feedbackMessage = 'Tâche ajoutée avec succès !';
       }
@@ -115,6 +116,9 @@ class _TaskEditScreenState extends ConsumerState<TaskEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tasks = ref.watch(tasksStreamProvider).value ?? [];
+    final parentTaskOptions = tasks.where((task) => task.key != widget.task?.key).toList();
+
     return Scaffold(
       appBar: AppBar(title: Text(_isEditing ? 'Modifier la Tâche' : 'Nouvelle Tâche'), actions: [IconButton(icon: const Icon(Icons.save_alt_outlined), onPressed: _saveForm, tooltip: 'Sauvegarder')]),
       body: SingleChildScrollView(
@@ -122,16 +126,30 @@ class _TaskEditScreenState extends ConsumerState<TaskEditScreen> {
         child: Form(key: _formKey, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           TextFormField(controller: _titleController, decoration: const InputDecoration(labelText: 'Titre'), validator: (v) => (v == null || v.trim().isEmpty) ? 'Le titre est obligatoire.' : null),
           const SizedBox(height: 20),
+           DropdownButtonFormField<dynamic>(
+            value: _parentTaskKey,
+            decoration: const InputDecoration(labelText: 'Tâche Parente (Optionnel)'),
+            items: [
+              const DropdownMenuItem<dynamic>(value: null, child: Text('Aucune')),
+              ...parentTaskOptions.map((task) => DropdownMenuItem<dynamic>(value: task.key, child: Text(task.title)))
+            ],
+            onChanged: (value) {
+              setState(() {
+                _parentTaskKey = value;
+              });
+            },
+          ),
+          const SizedBox(height: 20),
           TextFormField(controller: _descriptionController, decoration: const InputDecoration(labelText: 'Description (optionnel)'), maxLines: 3),
           const SizedBox(height: 20),
-          DropdownButtonFormField<TaskPriority>(initialValue: _priority, decoration: const InputDecoration(labelText: 'Priorité'), items: TaskPriority.values.map((p) => DropdownMenuItem(value: p, child: Text(p.toString().split('.').last.capitalize()))).toList(), onChanged: (v) => setState(() => _priority = v!)),
+          DropdownButtonFormField<TaskPriority>(value: _priority, decoration: const InputDecoration(labelText: 'Priorité'), items: TaskPriority.values.map((p) => DropdownMenuItem(value: p, child: Text(p.toString().split('.').last.capitalize()))).toList(), onChanged: (v) => setState(() => _priority = v!)),
           const SizedBox(height: 20),
-          DropdownButtonFormField<TaskStatus>(initialValue: _status, decoration: const InputDecoration(labelText: 'Statut'), items: TaskStatus.values.map((s) => DropdownMenuItem(value: s, child: Text(s.toString().split('.').last.capitalize()))).toList(), onChanged: (v) => setState(() => _status = v!)),
+          DropdownButtonFormField<TaskStatus>(value: _status, decoration: const InputDecoration(labelText: 'Statut'), items: TaskStatus.values.map((s) => DropdownMenuItem(value: s, child: Text(s.toString().split('.').last.capitalize()))).toList(), onChanged: (v) => setState(() => _status = v!)),
           const SizedBox(height: 20),
-          DropdownButtonFormField<Duration?>(initialValue: _estimatedDuration, decoration: const InputDecoration(labelText: 'Durée Estimée'), items: _durationOptions.entries.map((e) => DropdownMenuItem<Duration?>(value: e.value, child: Text(e.key))).toList(), onChanged: (v) => setState(() => _estimatedDuration = v)),
+          DropdownButtonFormField<Duration?>(value: _estimatedDuration, decoration: const InputDecoration(labelText: 'Durée Estimée'), items: _durationOptions.entries.map((e) => DropdownMenuItem<Duration?>(value: e.value, child: Text(e.key))).toList(), onChanged: (v) => setState(() => _estimatedDuration = v)),
           const SizedBox(height: 20),
           ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.calendar_today_outlined), title: Text(_dueDate == null ? 'Date d\'échéance' : 'Échéance: ${_dueDate!.toLocal().toString().substring(0, 10)}'), onTap: _selectDueDate, trailing: _dueDate != null ? IconButton(icon: const Icon(Icons.clear), onPressed: () => setState(() { _dueDate = null; _reminderOffset = null; })) : null),
-          if (_dueDate != null) Padding(padding: const EdgeInsets.only(left: 16.0, top: 0, bottom: 10), child: DropdownButtonFormField<Duration>(initialValue: _reminderOffset ?? Duration.zero, decoration: const InputDecoration(labelText: 'Rappel', border: InputBorder.none, prefixIcon: Icon(Icons.notifications_active_outlined)), items: _reminderOptions.entries.map((e) => DropdownMenuItem(value: e.value, child: Text(e.key))).toList(), onChanged: (v) => setState(() => _reminderOffset = (v == Duration.zero) ? null : v))),
+          if (_dueDate != null) Padding(padding: const EdgeInsets.only(left: 16.0, top: 0, bottom: 10), child: DropdownButtonFormField<Duration>(value: _reminderOffset ?? Duration.zero, decoration: const InputDecoration(labelText: 'Rappel', border: InputBorder.none, prefixIcon: Icon(Icons.notifications_active_outlined)), items: _reminderOptions.entries.map((e) => DropdownMenuItem(value: e.value, child: Text(e.key))).toList(), onChanged: (v) => setState(() => _reminderOffset = (v == Duration.zero) ? null : v))),
           ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.alarm_add_outlined), title: Text(_scheduledAt == null ? 'Planifier le démarrage' : 'Prévu pour: ${_scheduledAt!.toLocal().toString().substring(0, 16)}'), onTap: _selectScheduledAt, trailing: _scheduledAt != null ? IconButton(icon: const Icon(Icons.clear), onPressed: () => setState(() => _scheduledAt = null)) : null),
           const SizedBox(height: 20),
           TagInputField(initialTags: _tags, onChanged: (newTags) => setState(() => _tags = newTags)),

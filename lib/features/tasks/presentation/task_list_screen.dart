@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todo_work_sessions/pages/todo_detail.dart';
 import '../../../data/models/task.dart';
 import '../application/task_providers.dart';
 import 'widgets/task_list_item.dart';
@@ -11,20 +12,14 @@ class TaskListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // === ÉCOUTEUR POUR LES SNACKBARS ===
     ref.listen<String?>(taskFeedbackProvider, (previous, next) {
       if (next != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(next),
-            duration: const Duration(seconds: 2),
-          ),
+          SnackBar(content: Text(next), duration: const Duration(seconds: 2)),
         );
-        // On réinitialise le provider pour ne pas réafficher le message
         ref.read(taskFeedbackProvider.notifier).state = null;
       }
     });
-    // ===================================
 
     final tasksAsyncValue = ref.watch(tasksStreamProvider);
 
@@ -42,8 +37,9 @@ class TaskListScreen extends ConsumerWidget {
             );
           }
 
-          final sortedTasks = List<Task>.from(tasks);
-          sortedTasks.sort((a, b) {
+          final parentTasks = tasks.where((task) => task.parentTaskKey == null).toList();
+
+          parentTasks.sort((a, b) {
             if (a.status == TaskStatus.done && b.status != TaskStatus.done) return 1;
             if (a.status != TaskStatus.done && b.status == TaskStatus.done) return -1;
             return b.createdAt.compareTo(a.createdAt);
@@ -51,16 +47,21 @@ class TaskListScreen extends ConsumerWidget {
 
           return ListView.builder(
             padding: const EdgeInsets.only(top: 8, bottom: 80),
-            itemCount: sortedTasks.length,
+            itemCount: parentTasks.length,
             itemBuilder: (context, index) {
-              final task = sortedTasks[index];
-              return TaskListItem(task: task);
+              final task = parentTasks[index];
+
+              return GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TodoDetailPage(taskKey: task.key)),
+                ),
+                child: TaskListItem(task: task),
+              );
             },
           );
         },
-        error: (err, stack) => Center(
-          child: Text("Erreur: $err", style: const TextStyle(color: Colors.red)),
-        ),
+        error: (err, stack) => Center(child: Text("Erreur: $err", style: const TextStyle(color: Colors.red))),
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );

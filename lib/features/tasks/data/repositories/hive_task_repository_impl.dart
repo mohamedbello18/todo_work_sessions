@@ -1,5 +1,3 @@
-// lib/features/tasks/data/repositories/hive_task_repository_impl.dart
-
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../data/models/task.dart';
@@ -14,15 +12,25 @@ class HiveTaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<void> addTask(Task task) async {
-    // === CORRECTION : APPEL SIMPLIFIÉ ===
-    // La méthode `add` ajoute la tâche, la sauvegarde, et met à jour sa clé.
-    // L'appel `save()` redondant a été supprimé car il pouvait causer des problèmes.
     await _tasksBox.add(task);
-    _scheduleNotifications(task); // On planifie les notifications après que la tâche a une clé.
+    _scheduleNotifications(task); 
   }
 
   @override
   Future<void> deleteTask(Task task) async {
+    // Find and delete all children tasks first
+    final allTasks = _tasksBox.values.toList();
+    final subTasks = allTasks.where((t) => t.parentTaskKey == task.key).toList();
+
+    for (final subTask in subTasks) {
+      await _deleteSingleTask(subTask);
+    }
+
+    // Finally, delete the parent task
+    await _deleteSingleTask(task);
+  }
+
+  Future<void> _deleteSingleTask(Task task) async {
     final int notificationId = task.key as int;
     final int scheduledId = notificationId + 1000000;
     _notificationService.cancelNotification(notificationId);
