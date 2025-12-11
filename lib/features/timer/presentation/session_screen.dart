@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo_work_sessions/features/timer/application/dnd_provider.dart';
 import 'package:todo_work_sessions/features/timer/application/timer_notifier.dart';
+import 'package:todo_work_sessions/features/timer/presentation/session_history_screen.dart';
 import '../domain/timer_state.dart';
 import '../../application/application_providers.dart';
 
@@ -35,6 +36,10 @@ class SessionScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Session de Focus'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SessionHistoryScreen())),
+          ),
           IconButton(
             icon: Icon(isDndEnabled ? Icons.do_not_disturb_on : Icons.do_not_disturb_off),
             color: isDndEnabled ? Colors.blue : null,

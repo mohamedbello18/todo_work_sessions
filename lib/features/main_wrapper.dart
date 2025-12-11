@@ -45,7 +45,7 @@ class MainWrapper extends ConsumerWidget {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.check_box_outlined), label: 'Tâches'),
-          BottomNavigationBarItem(icon: Icon(Icons.timer_outlined), label: 'Minuteur'),
+          BottomNavigationBarItem(icon: Icon(Icons.timelapse_outlined), label: 'Session'),
           BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), label: 'Paramètres'),
         ],
         currentIndex: selectedIndex,

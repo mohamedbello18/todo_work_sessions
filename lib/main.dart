@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'core/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
 import 'data/adapters/duration_adapter.dart';
+import 'data/models/session.dart';
 import 'data/models/task.dart'; 
 import 'features/main_wrapper.dart';
 import 'features/settings/application/theme_provider.dart';
@@ -21,9 +23,12 @@ Future<void> initDependencies() async {
   Hive.registerAdapter(TaskStatusAdapter());
   Hive.registerAdapter(DurationAdapter());
   Hive.registerAdapter(ThemeModeAdapter()); 
+  Hive.registerAdapter(SessionAdapter());
+  Hive.registerAdapter(RecordedSessionTypeAdapter());
 
   // Overture des box
   await Hive.openBox<Task>('tasksBox');
+  await Hive.openBox<Session>('sessionsBox');
   await Hive.openBox('settings');
 
   await NotificationService().init();
@@ -32,6 +37,7 @@ Future<void> initDependencies() async {
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await initializeDateFormatting('fr_FR', null);
   await initDependencies();
   runApp(const ProviderScope(child: TodoWorkSessionsApp()));
 }
